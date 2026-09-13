@@ -1,6 +1,6 @@
 # Introduction
 
-**SeaSearch** is a multi-tenant search engine built on top of the open-source search engine [ZincSearch](https://zincsearch-docs.zinc.dev/) and implemented in Go. Our goal is to provide a lightweight search engine that can support an unlimited number of indexes.
+**SeaSearch** is a multi-tenant search engine with full-text indexing and vector indexing. It is Elasticsearch-compatible and S3-backed. Our goal is to provide a lightweight search engine that can support an unlimited number of indexes.
 
 In a multi-tenant environment, such as a SaaS application, this allows each tenant's data to be indexed independently. With traditional search engines such as Elasticsearch, when all tenants' data is stored in a single index, the index may eventually become too large and require manual sharding. With SeaSearch, each tenant can have its own index, making it easier to manage and scale large numbers of tenants.
 
