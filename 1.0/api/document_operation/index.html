@@ -27,7 +27,7 @@
     
     
       
-        <title>Document operation - SeaSearch Manual</title>
+        <title>Document operations - SeaSearch Manual</title>
       
     
     
@@ -117,7 +117,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Document operation
+              Document operations
             
           </span>
         </div>
@@ -989,6 +989,8 @@
       <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
       
       
+        
+      
       
         <label class="md-nav__link md-nav__link--active" for="__toc">
           
@@ -997,7 +999,7 @@
   <span class="md-ellipsis">
     
   
-    Document operation
+    Document operations
   
 
     
@@ -1015,7 +1017,7 @@
   <span class="md-ellipsis">
     
   
-    Document operation
+    Document operations
   
 
     
@@ -1031,6 +1033,8 @@
   
   
   
+    
+  
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
@@ -1039,18 +1043,6 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#document-operations" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Document Operations
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Document Operations">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
   <a href="#create-document" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1060,8 +1052,8 @@
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
+      
+        <li class="md-nav__item">
   <a href="#update-document" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1071,8 +1063,8 @@
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
+      
+        <li class="md-nav__item">
   <a href="#delete-document" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1082,8 +1074,8 @@
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
+      
+        <li class="md-nav__item">
   <a href="#get-document-by-id" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1093,8 +1085,8 @@
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
+      
+        <li class="md-nav__item">
   <a href="#batch-operations" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1102,11 +1094,6 @@
       
     </span>
   </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -1377,6 +1364,8 @@
   
   
   
+    
+  
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
@@ -1385,18 +1374,6 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#document-operations" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Document Operations
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Document Operations">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
   <a href="#create-document" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1406,8 +1383,8 @@
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
+      
+        <li class="md-nav__item">
   <a href="#update-document" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1417,8 +1394,8 @@
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
+      
+        <li class="md-nav__item">
   <a href="#delete-document" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1428,8 +1405,8 @@
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
+      
+        <li class="md-nav__item">
   <a href="#get-document-by-id" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1439,8 +1416,8 @@
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
+      
+        <li class="md-nav__item">
   <a href="#batch-operations" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1448,11 +1425,6 @@
       
     </span>
   </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -1476,28 +1448,26 @@
   
 
 
-  <h1>Document operation</h1>
-
-<h2 id="document-operations">Document Operations<a class="headerlink" href="#document-operations" title="Permanent link">&para;</a></h2>
+<h1 id="document-operations">Document Operations<a class="headerlink" href="#document-operations" title="Permanent link">&para;</a></h1>
 <p>An index stores multiple documents. Users can perform CRUD operations (Create, Read, Update, Delete) on documents via the API. In SeaSearch, each document has a unique ID.</p>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
 <p>Due to architectural design, SeaSearch’s performance for single document CRUD operations is much lower than that of ElasticSearch. Therefore, we recommend using batch operations whenever possible.</p>
 </div>
 <p>ElasticSearch Document APIs contain many additional parameters that are not meaningful to SeaSearch and are not supported. All query parameters are unsupported.</p>
-<h3 id="create-document">Create Document<a class="headerlink" href="#create-document" title="Permanent link">&para;</a></h3>
+<h2 id="create-document">Create Document<a class="headerlink" href="#create-document" title="Permanent link">&para;</a></h2>
 <p>ElasticSearch API: <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-index_.html">Index Document</a></p>
-<h3 id="update-document">Update Document<a class="headerlink" href="#update-document" title="Permanent link">&para;</a></h3>
+<h2 id="update-document">Update Document<a class="headerlink" href="#update-document" title="Permanent link">&para;</a></h2>
 <p>ElasticSearch’s update API supports partial updates to fields. SeaSearch only supports full document updates and does not support updating data via script or detecting if an update is a no-op.</p>
 <p>If the document does not exist during an update, SeaSearch will create the corresponding document.</p>
 <p>ElasticSearch API: <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-update.html">Update Document</a></p>
-<h3 id="delete-document">Delete Document<a class="headerlink" href="#delete-document" title="Permanent link">&para;</a></h3>
+<h2 id="delete-document">Delete Document<a class="headerlink" href="#delete-document" title="Permanent link">&para;</a></h2>
 <p>Delete a document by its ID.</p>
 <p>ElasticSearch API: <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-delete.html">Delete Document</a></p>
-<h3 id="get-document-by-id">Get Document by ID<a class="headerlink" href="#get-document-by-id" title="Permanent link">&para;</a></h3>
+<h2 id="get-document-by-id">Get Document by ID<a class="headerlink" href="#get-document-by-id" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code>[GET] /api/${indexName}/_doc/${docId}
 </code></pre></div>
-<h3 id="batch-operations">Batch Operations<a class="headerlink" href="#batch-operations" title="Permanent link">&para;</a></h3>
+<h2 id="batch-operations">Batch Operations<a class="headerlink" href="#batch-operations" title="Permanent link">&para;</a></h2>
 <p>It is recommended to use batch operations to update indexes.</p>
 <p>ElasticSearch API: <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-bulk.html">Bulk Document API</a></p>
 

@@ -961,6 +961,8 @@
       <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
       
       
+        
+      
       
         <label class="md-nav__link md-nav__link--active" for="__toc">
           
@@ -1003,6 +1005,8 @@
   
   
   
+    
+  
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
@@ -1011,18 +1015,6 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#index-management" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Index Management
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Index Management">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
   <a href="#create-index" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1032,8 +1024,8 @@
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
+      
+        <li class="md-nav__item">
   <a href="#configure-mappings" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1043,8 +1035,8 @@
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
+      
+        <li class="md-nav__item">
   <a href="#configure-settings" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1054,8 +1046,8 @@
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
+      
+        <li class="md-nav__item">
   <a href="#analyzer-support" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1065,8 +1057,8 @@
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
+      
+        <li class="md-nav__item">
   <a href="#chinese-analyzer" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1074,11 +1066,6 @@
       
     </span>
   </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -1105,7 +1092,7 @@
   <span class="md-ellipsis">
     
   
-    Document operation
+    Document operations
   
 
     
@@ -1377,6 +1364,8 @@
   
   
   
+    
+  
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
@@ -1385,18 +1374,6 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#index-management" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Index Management
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Index Management">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
   <a href="#create-index" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1406,8 +1383,8 @@
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
+      
+        <li class="md-nav__item">
   <a href="#configure-mappings" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1417,8 +1394,8 @@
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
+      
+        <li class="md-nav__item">
   <a href="#configure-settings" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1428,8 +1405,8 @@
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
+      
+        <li class="md-nav__item">
   <a href="#analyzer-support" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1439,8 +1416,8 @@
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
+      
+        <li class="md-nav__item">
   <a href="#chinese-analyzer" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1448,11 +1425,6 @@
       
     </span>
   </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -1476,14 +1448,12 @@
   
 
 
-  <h1>Index management</h1>
-
-<h2 id="index-management">Index Management<a class="headerlink" href="#index-management" title="Permanent link">&para;</a></h2>
+<h1 id="index-management">Index Management<a class="headerlink" href="#index-management" title="Permanent link">&para;</a></h1>
 <p>In SeaSearch, users can create any number of indexes. An index is a collection of documents that can be searched, and a document can contain multiple searchable fields. Users specify the fields contained in the index via mappings and can customize the analyzers available to the index through settings. Each field can specify either a built-in or custom analyzer. The analyzer is used to split the content of a field into searchable tokens.</p>
-<h3 id="create-index">Create Index<a class="headerlink" href="#create-index" title="Permanent link">&para;</a></h3>
+<h2 id="create-index">Create Index<a class="headerlink" href="#create-index" title="Permanent link">&para;</a></h2>
 <p>To create a SeaSearch index, you can configure the mappings and settings at the same time. For more details about mappings and settings, refer to the following sections.</p>
 <p>ElasticSearch API: <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-create-index.html">Create Index</a></p>
-<h3 id="configure-mappings">Configure Mappings<a class="headerlink" href="#configure-mappings" title="Permanent link">&para;</a></h3>
+<h2 id="configure-mappings">Configure Mappings<a class="headerlink" href="#configure-mappings" title="Permanent link">&para;</a></h2>
 <p>Mappings define the types and attributes of fields in a document. Users can configure the mapping via the API.</p>
 <p>SeaSearch supports the following field types:</p>
 <ul>
@@ -1497,7 +1467,7 @@
 <p>Other types, such as flattened, object, nested, etc., are not supported, and mappings do not support modifying existing fields (new fields can be added).</p>
 <p>ElasticSearch Mappings API: <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-put-mapping.html">Put Mapping</a></p>
 <p>ElasticSearch Mappings Explanation: <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-types.html">Mapping Types</a></p>
-<h3 id="configure-settings">Configure Settings<a class="headerlink" href="#configure-settings" title="Permanent link">&para;</a></h3>
+<h2 id="configure-settings">Configure Settings<a class="headerlink" href="#configure-settings" title="Permanent link">&para;</a></h2>
 <p>Index settings control the properties of the index. The most commonly used property is <code>analysis</code>, which allows you to customize the analyzers for the index. The analyzers defined here can be used by fields in the mappings.</p>
 <p>SeaSearch does not support replicas and shards since it uses shared storage architecture. Users can only configure analyzers in the settings, so it does not support parameters like these:
 - number_of_shards
@@ -1507,10 +1477,10 @@
 <p>ElasticSearch related explanation:
 - <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis-concepts.html">Analyzer Concepts</a>
 - <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/specify-analyzer.html">Specifying Analyzers</a></p>
-<h3 id="analyzer-support">Analyzer Support<a class="headerlink" href="#analyzer-support" title="Permanent link">&para;</a></h3>
+<h2 id="analyzer-support">Analyzer Support<a class="headerlink" href="#analyzer-support" title="Permanent link">&para;</a></h2>
 <p>Analyzers can be configured as default when creating an index, or they can be set for specific fields. (See the previous section for related concepts from the ES documentation.)</p>
 <p>SeaSearch supports the following analyzers, which can be found here: <a href="https://zincsearch-docs.zinc.dev/api/index/analyze/">ZincSearch Documentation</a>. The concepts such as tokenization and token filters are consistent with ES and support most of the commonly used analyzers and tokenizers in ES.</p>
-<h3 id="chinese-analyzer">Chinese Analyzer<a class="headerlink" href="#chinese-analyzer" title="Permanent link">&para;</a></h3>
+<h2 id="chinese-analyzer">Chinese Analyzer<a class="headerlink" href="#chinese-analyzer" title="Permanent link">&para;</a></h2>
 <p>To enable the Chinese analyzer in the system, set the environment variable <code>SS_PLUGIN_GSE_ENABLE=true</code> in <code>.env</code>.</p>
 <p>If you need more comprehensive support for Chinese word dictionaries, set <code>SS_PLUGIN_GSE_DICT_EMBED = BIG</code>.</p>
 <p><code>GSE</code> is a standard analyzer, so you can directly assign the Chinese analyzer to fields in the mappings:
@@ -1585,13 +1555,13 @@ docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> 
         
         
           
-          <a href="../document_operation/" class="md-footer__link md-footer__link--next" aria-label="Next: Document operation">
+          <a href="../document_operation/" class="md-footer__link md-footer__link--next" aria-label="Next: Document operations">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Next
               </span>
               <div class="md-ellipsis">
-                Document operation
+                Document operations
               </div>
             </div>
             <div class="md-footer__button md-icon">
