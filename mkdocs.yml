@@ -86,7 +86,9 @@ nav:
       - Use and access SeaSearch APIs: usage/use_and_access_seasearch_apis.md
       - Backup and Restore: usage/backup_and_restore.md
   - Configuration:
-    - Overview: config/README.md
+    - SeaSearch: config/seasearch.md
+    - SeaSearch-Proxy: config/seasearch_proxy.md
+    - Cluster-Manager: config/cluster_manager.md
     - Example: config/example.md
   - SeaSearch API:
     - Overview: api/overview.md
