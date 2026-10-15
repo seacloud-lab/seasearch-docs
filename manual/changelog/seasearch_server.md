@@ -2,6 +2,19 @@
 
 ## 1.0
 
+### 1.0.8 (2026-10-14)
+
+- Fix a crash issue.
+- Reduce memory consumption when handling many indexes.
+
+### 1.0.7 (2026-09-12)
+
+- Fix an issue that prevented the process from restarting automatically.
+
+### 1.0.6 (2026-09-12)
+
+- Fix an issue in vector search when using S3/OSS storage.
+
 ### 1.0.5 (2026-09-10)
 
 - Add log rotate
