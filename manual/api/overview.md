@@ -1,18 +1,97 @@
-# Overview
+# SeaSearch API
 
-SeaSearch is multi-tenant search engine with full-text indexing and vector indexing.
+<div class="ss-hero" markdown="1">
 
-SeaSearch is compatible with ElasticSearch (ES) APIs. The concepts used in the API are similar to those in ElasticSearch, so users can directly refer to the [ElasticSearch API documentation](https://www.elastic.co/guide/en/elasticsearch/reference/current/rest-apis.html) for most API calls. This document includes the commonly used APIs to help users quickly understand the main concepts and basic usage flow.
+Index · Query · Discover
+{ .ss-eyebrow }
 
+SeaSearch provides document indexing, full-text search, and vector search through native APIs and a supported subset of Elasticsearch-compatible APIs.
 
-The ES-compatible APIs provided by SeaSearch can be accessed by adding the /es/ prefix in the URL. For example, the ES API URL is:
+[Start the tutorial](query_dsl/getting_started.md){ .md-button .md-button--primary }
+[Explore Query DSL](query_dsl/overview.md){ .md-button }
 
+</div>
+
+## Start here
+
+<div class="grid cards" markdown="1">
+
+- **1. Connect**
+
+    ---
+
+    Set your service address and credentials before sending a request.
+
+    [Configure authentication →](authentication.md)
+
+- **2. Index your data**
+
+    ---
+
+    Create an index with explicit mappings, then import a small dataset.
+
+    [Create an index →](index/create_index.md)
+
+- **3. Run a search**
+
+    ---
+
+    Follow a complete example of full-text queries and exact-value filters.
+
+    [Follow the tutorial →](query_dsl/getting_started.md)
+
+</div>
+
+## Reference
+
+<div class="grid cards" markdown="1">
+
+- **[Index](index/overview.md)**
+
+    Mappings, field types, text analysis, settings, templates, and aliases.
+
+- **[Document](document/overview.md)**
+
+    Individual and batch writes, document retrieval, updates, and deletion.
+
+- **[Search](search/search.md)**
+
+    Requests, responses, pagination, highlighting, and aggregations.
+
+- **[Query DSL](query_dsl/overview.md)**
+
+    Full-text queries, exact values, term patterns, and compound conditions.
+
+- **[Vector search](vector_search_api.md)**
+
+    Vector search requests, [sealing](seal_vector_index.md), and [recall](recall.md).
+
+- **Access and operations**
+
+    [Users](access/users.md), [roles](access/roles.md), [permissions](access/permissions.md), [version](system/version.md), [health](system/health_check.md), and [operations](system/operations.md).
+
+</div>
+
+!!! tip "Running a cluster?"
+    Read [Cluster API usage](cluster.md) for management access and search differences before using these examples with SeaSearch-Proxy.
+
+## Request conventions
+
+The ordinary reference pages describe single-node behavior. For a cluster, use SeaSearch-Proxy and consult the [cluster differences](cluster.md).
+
+The `/es/` prefix identifies supported compatible routes, not an automatic translation of every Elasticsearch API. For example, DSL search uses:
+
+```http
+POST /es/api_books/_search
+Content-Type: application/json
 ```
-GET /my-index-000001/_search
+
+```json
+{"query":{"match_all":{}},"size":10}
 ```
 
-The corresponding SeaSearch API URL is:
+For the native request format, see [Native search](search/native_search.md).
 
-```
-GET /es/my-index-000001/_search
-```
+Examples use a disposable `api_books` index and the shell variables defined in [Authentication](authentication.md). Dynamic scores, times, IDs, and statistics are illustrative. Write acknowledgment does not always mean search visibility; inspect batch errors and verify data before dependent operations.
+
+Functionality introduced in a later version is marked where relevant, such as HNSW support since v1.1. Use [Version](system/version.md) to identify a running Server.

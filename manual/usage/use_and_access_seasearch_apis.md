@@ -22,7 +22,7 @@ dXNlcm5hbWU6cGFzc3dvcmQ=
 Please take your auth token to access SeaSearch APIs by adding it into `headers`, i.e.,
 
 ```json
-headers = {
+{
     "Authorization": "Basic dXNlcm5hbWU6cGFzc3dvcmQ="
 }
 ```
@@ -40,15 +40,15 @@ curl -X 'POST' \
 -d '{
 "_id": "regular_user",
 "permission":   [
-    "index.Create",
+    "index.CreateES",
     "index.Delete",
-    "document.Create",
+    "document.CreateUpdate",
     "document.Get",
     "document.Update",
     "document.Delete",
-    "search.SearchV1"
+    "search.SearchDSL"
 ],
-"role": "regular_user"
+"name": "Regular user"
 }'
 ```
 
@@ -113,21 +113,21 @@ Here we will take regular users creating, using and deleting an index as example
 
 ### Create an index
 
-You can create an index by **PUT `/Index_name`** with related settings, for exmaple (we assume the index name is `index_1`):
+Create an index with **PUT `/es/{index}`**; see [Create index](../api/index/create_index.md). For example:
 
 ```sh
-curl -X 'POST' \
+curl -X 'PUT' \
   'http://<your IP>:4080/es/index_1' \
   -H 'accept: application/json' \
   -H 'authorization: Basic cnVfdXNlcm5hbWU6cnVfcGFzc3dvcmQ=' \
   -H 'Content-Type: application/json' \
   -d '{  
-  "mappings:{
-    "name":{
+  "mappings": {"properties": {
+    "name": {
         "type":"text",
         "highlightable":true
     }
- }    
+ }}
 }'
 ```
 
@@ -135,9 +135,9 @@ Example response if index `index_1` creates successfully
 
 ```json
 {
-  "message": "ok",
-  "index": "index_1",
-  "storage_type": "disk"
+  "acknowledged": true,
+  "shards_acknowledged": true,
+  "index": "index_1"
 }
 ```
 
@@ -174,11 +174,11 @@ Example response:
 }
 ```
 
-In this case, you will get an id `2evTtrGhVf2` for this book. Also, you can add multiple documents at the same time by **POST** `/api/_bulk` (see [Bulk Document API](https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-bulk.html))
+In this case, you will get an id `2evTtrGhVf2` for this book. You can also add multiple documents with the [Bulk API](../api/document/bulk.md); native and ES-compatible paths require different permissions.
 
 ### Search document by querying matched fields
 
-When you have stored a considerable number of documents in an index in SeaSearch (such as `index_1` above), you can use **GET** `/api/<your index name>/_search` to search for the required document by the fields you want to match:
+Once documents become searchable, use **POST** `/es/{index}/_search` with Query DSL. See [Search](../api/search/search.md) and the [tutorial](../api/query_dsl/getting_started.md):
 
 ```sh
 curl -X 'POST' \

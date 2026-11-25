@@ -1,0 +1,66 @@
+/* Keep the API overview hero self-contained. */
+.md-typeset .ss-hero {
+  --ss-radius: 0.6rem;
+  --ss-border: #dce3ef;
+  --ss-muted: #52617a;
+  --ss-hero-start: #edf2ff;
+  --ss-hero-end: #f4fafb;
+
+  margin: 0 0 1.6rem;
+  padding: 1.5rem;
+  border: 1px solid var(--ss-border);
+  border-radius: var(--ss-radius);
+  background: linear-gradient(120deg, var(--ss-hero-start), var(--ss-hero-end));
+}
+
+[data-md-color-scheme="slate"] .md-typeset .ss-hero {
+  --ss-border: #3c465d;
+  --ss-muted: #b4c0d6;
+  --ss-hero-start: #253253;
+  --ss-hero-end: #21363e;
+}
+
+.md-typeset .ss-hero > :first-child {
+  margin-top: 0;
+}
+
+.md-typeset .ss-hero > :last-child {
+  margin-bottom: 0;
+}
+
+.md-typeset .ss-hero .ss-eyebrow {
+  color: var(--ss-muted);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.md-typeset .ss-hero .md-button {
+  margin: 0.35rem 0.4rem 0 0;
+  padding: 0.5em 1em;
+  border-radius: 0.35rem;
+  font-size: 0.75rem;
+}
+
+.md-typeset table:not([class]) {
+  font-size: 0.75rem;
+}
+
+/* Route signatures omit HTTP versions, so Pygments may mark them as errors. */
+.md-typeset .language-http .err {
+  background: transparent;
+  color: inherit;
+}
+
+@media screen and (max-width: 44.984375em) {
+  .md-typeset .ss-hero {
+    padding: 1rem;
+  }
+}
+
+@media print {
+  .md-typeset .ss-hero {
+    background: none;
+  }
+}

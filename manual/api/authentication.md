@@ -1,38 +1,53 @@
-# API Authentication
-SeaSearch uses HTTP Basic Auth for authentication. API requests must include the corresponding basic auth token in the header.
+<span id="api-authentication"></span>
 
-To generate a basic auth token, combine the username and password with a colon (e.g., aladdin:opensesame), and then base64 encode the resulting string (e.g., YWxhZGRpbjpvcGVuc2VzYW1l).
+# Authentication
 
-You can generate a token using the following command, for example with aladdin:opensesame:
+Protected SeaSearch APIs use **HTTP Basic authentication**. Send your username and password with each request; no login token is required.
 
-```
-echo -n 'aladdin:opensesame' | base64
-YWxhZGRpbjpvcGVuc2VzYW1l
+## Using curl
+
+The examples throughout this reference use these shell variables:
+
+```sh title="Set credentials and send an authenticated request"
+export SS_URL='http://localhost:4080'
+export SS_USER='your-user'
+export SS_PASSWORD='your-password'
+
+curl -u "$SS_USER:$SS_PASSWORD" "$SS_URL/api/index"
 ```
 
-!!! danger
-    Basic auth is not secure. If you need to access SeaSearch over the public internet, it is strongly recommended to enable [HTTPS](../usage/https.md).
-    
-```
-"Authorization": "Basic YWRtaW46MTIzNDU2Nzg="
-```
+Alternatively, send `Authorization: Basic <base64(username:password)>`. Base64 is an encoding, not encryption.
+
+!!! warning "Protect credentials and administrative endpoints"
+    Use HTTPS across untrusted networks. Do not expose backend, Cluster Manager, or debugging ports directly to the public internet. Management and diagnostics have different access boundaries; see [Cluster API usage](cluster.md) and the [Operations appendix](system/operations.md).
+
+## Roles and permissions
+
+Users are assigned a role. The `admin` role bypasses individual permission checks; other roles need the exact operation permission. Native and ES-compatible paths can require different permissions even when they perform the same operation.
+
+`GET /api/permissions` lists registered permission identifiers. Common examples include:
+
+| Operation | Native permission | ES-compatible permission |
+| --- | --- | --- |
+| Create index | `index.Create` | `index.CreateES` |
+| Index document | `document.Create` | `document.CreateUpdate` |
+| Bulk | `document.Bulk` | `document.ESBulk` |
+| Search | `search.SearchV1` | `search.SearchDSL` |
+
+Permissions control operations, not per-index ownership. Do not treat an index name as an authorization boundary.
+
+For user/role administration, see [Users](access/users.md), [Roles](access/roles.md), and [Permissions](access/permissions.md). [Login](access/login.md) validates credentials but does not create a session for subsequent requests.
+
+## Authentication errors
+
+| Status | Meaning | Typical response |
+| --- | --- | --- |
+| 401 | No credentials | `{"auth":"Missing credentials"}` |
+| 401 | Credentials invalid | `{"auth":"Invalid credentials"}` |
+| 403 | Role lacks permission | `{"error":"No permission:search.SearchDSL"}` |
+
+Version, health, and client-probe routes do not all use this middleware. Administrative and diagnostic exceptions are described on their own pages. Cluster search permissions are explained centrally in [Cluster API usage](cluster.md).
 
 ## Regular Users
-You can create/update users via the API:
-```
-[POST] /api/user
-{ 
-    "_id": "prabhat",
-    "name": "Prabhat Sharma",
-    "role": "admin", // or user
-    "password": "Complexpass#123"
-}
-```
-To get all users:
-```
-[GET] /api/user
-```
-To delete a user:
-```
-[DELETE] /api/user/${userId}
-```
+
+See [Users](access/users.md) to create a non-administrator account and [Roles](access/roles.md) to assign operation permissions.
