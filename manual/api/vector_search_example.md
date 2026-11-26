@@ -1,139 +1,85 @@
 # Vector search example
 
-This example indexes papers whose content is represented by vectors. A paper can have multiple vector documents; the same `paper-id` can therefore appear more than once in the search results.
+Create a small four-dimensional dataset and search it without an external embedding model. Use the credentials and `SS_URL` from [Authentication](authentication.md). Choose a fresh disposable `api_vectors` index.
 
 ## Creating the SeaSearch Index and Vector Index
 
-The mapping request creates the `paper` index and its vector index. The `paper-id` field is a `keyword` because it is used as an identifier and does not need text analysis.
-
-```http
-PUT /es/paper/_mapping
-Content-Type: application/json
+```sh title="1. Create a four-dimensional flat vector index"
+curl -u "$SS_USER:$SS_PASSWORD" \
+  -X PUT "$SS_URL/es/api_vectors" \
+  -H 'Content-Type: application/json' \
+  --data-binary '{"mappings":{"properties":{
+    "vec":{"type":"vector","dims":4,"vec_index_type":"flat"},
+    "name":{"type":"keyword"},
+    "category":{"type":"keyword"}
+  }}}'
 ```
 
-```json
-{
-  "properties": {
-    "content-vec": {
-      "type": "vector",
-      "dims": 768,
-      "vec_index_type": "flat"
-    },
-    "paper-id": {
-      "type": "keyword"
-    }
-  }
-}
-```
-With the above request, an index named paper is created, and a flat vector index is established for the content-vec field.
+`flat` keeps this example independent of training thresholds. To use HNSW, supported since v1.1, select `hnsw` on a new index instead. See [Vector mapping options](vector_search_api.md#create-a-vector-index).
 
 ## Indexing Data
 
-Use the bulk API to insert multiple vector documents.
+Use generated IDs; arbitrary strings such as `book-1` are not valid vector-index IDs.
 
-```http
-POST /es/_bulk
-Content-Type: application/x-ndjson
+```sh title="2. Import three vectors with generated IDs"
+curl -u "$SS_USER:$SS_PASSWORD" \
+  -X POST "$SS_URL/es/api_vectors/_bulk" \
+  -H 'Content-Type: application/x-ndjson' \
+  --data-binary @- <<'NDJSON'
+{"index":{"_index":"api_vectors"}}
+{"name":"search-guide","category":"reference","vec":[1,0,0,0]}
+{"index":{"_index":"api_vectors"}}
+{"name":"vector-handbook","category":"reference","vec":[0.8,0.2,0,0]}
+{"index":{"_index":"api_vectors"}}
+{"name":"travel-guide","category":"travel","vec":[0,1,0,0]}
+NDJSON
 ```
 
-```json
-{ "index": { "_index": "paper" } }
-{ "paper-id": "001", "content-vec": [10.2, 10.40, 9.5, 22.2, ...] }
-{ "index": { "_index": "paper" } }
-{ "paper-id": "001", "content-vec": [10.2, 10.41, 9.5, 22.2, ...] }
-{ "index": { "_index": "paper" } }
-{ "paper-id": "002", "content-vec": [10.2, 11.40, 9.5, 22.2, ...] }
-{ "index": { "_index": "paper" } }
-{ "paper-id": "003", "content-vec": [10.2, 12.40, 9.5, 22.2, ...] }
-{ "index": { "_index": "paper" } }
-{ "paper-id": "005", "content-vec": [10.2, 10.37, 9.5, 22.2, ...] }
-{ "index": { "_index": "paper" } }
-{ "paper-id": "006", "content-vec": [10.2, 10.38, 9.5, 22.2, ...] }
-```
+Inspect the Bulk response for errors and save each returned `_id`. Writes can become searchable asynchronously. Before continuing, repeat a match-all Search with `size: 0` until `hits.total.value` is 3, using a bounded wait in automation:
 
-Save the document IDs returned by the bulk response if you need to update or delete individual vector documents later.
+```sh title="3. Check document search visibility"
+curl -u "$SS_USER:$SS_PASSWORD" \
+  -X POST "$SS_URL/es/api_vectors/_search" \
+  -H 'Content-Type: application/json' \
+  --data-binary '{"query":{"match_all":{}},"size":0}'
+```
 
 ## Searching Data
 
-The query below searches for the ten nearest vectors and returns the `paper-id` field.
-
-```http
-POST /api/paper/_search/vector
-Content-Type: application/json
+```sh title="4. Search the nearest reference vectors"
+curl -u "$SS_USER:$SS_PASSWORD" \
+  -X POST "$SS_URL/api/api_vectors/_search/vector" \
+  -H 'Content-Type: application/json' \
+  --data-binary '{"query_field":"vec","vector":[1,0,0,0],"k":2,"return_fields":["name"],"filter_query":{"term":{"category":"reference"}}}'
 ```
 
-```json
-{
-  "query_field": "content-vec",
-  "k": 10,
-  "return_fields": ["paper-id"],
-  "vector": [10.2, 10.40, 9.5, 22.2, ...]
-}
-```
-
-This search returns the documents corresponding to the most similar vectors and provides the `paper-id`. A paper may contain multiple vectors, so the same `paper-id` can appear multiple times in the results.
+After both document and vector data are available, the exact-match vector should rank first. The response uses Search hits; a selected field is returned as `"fields":{"name":["search-guide"]}`. Embeddings themselves are not returned in `_source`. Do not assert exact timing or generated IDs in tests.
 
 ## Maintain vector data
 
 ### Update a document directly
 
-After a document is successfully indexed, SeaSearch returns its document ID. You can use this ID to update the document directly. Replace the placeholder ID with the ID returned by the indexing request.
+Use a saved generated ID and send the complete replacement, including its vector:
 
-```http
-POST /es/_bulk
-Content-Type: application/x-ndjson
+```sh title="Replace a saved vector document"
+curl -u "$SS_USER:$SS_PASSWORD" \
+  -X PUT "$SS_URL/es/api_vectors/_doc/$VECTOR_DOC_ID" \
+  -H 'Content-Type: application/json' \
+  --data-binary '{"name":"search-guide","category":"reference","vec":[0.9,0.1,0,0]}'
 ```
 
-```json
-{ "update": { "_id": "<document-id-for-paper-005>", "_index": "paper" } }
-{ "paper-id": "005", "content-vec": [10.2, 10.39, 9.5, 22.2, ...] }
-```
+Set `VECTOR_DOC_ID` to an actual `_id` from your response before running this command.
 
 ### Query Then Update
 
-If you did not save the returned document ID, you can first use SeaSearch's full-text search functionality to query the document or documents corresponding to a specific `paper-id`.
+If the ID was not saved, find it through an ordinary keyword query:
 
-```http
-POST /es/paper/_search
-Content-Type: application/json
+```json title="Find a document ID by business name"
+{"query":{"term":{"name":"search-guide"}},"size":10}
 ```
 
-```json
-{
-  "query": {
-    "bool": {
-      "must": [
-        {
-          "term": {"paper-id": "003"}
-        }
-      ]
-    }
-  }
-}
-```
-
-Using this query, you can retrieve the document associated with the `paper-id` along with its document ID.
+Submit that body to `POST /es/api_vectors/_search`, inspect all intended matches, and use the returned IDs for replacements.
 
 ### Replace all vector documents for a paper
 
-A paper can contain multiple vector documents. If you know the document ID for an individual vector, you can update it directly. If the paper content is re-segmented or it is difficult to determine which existing vector each new vector replaces, replace all vector documents for the paper:
-
-1. Query all documents for the paper by `paper-id` and record their document IDs.
-2. Delete those documents.
-3. Index the latest vector documents.
-
-The delete and index operations can be included in the same bulk request:
-
-```http
-POST /es/_bulk
-Content-Type: application/x-ndjson
-```
-
-```json
-{ "delete": { "_id": "<document-id-for-paper-001-vector-1>", "_index": "paper" } }
-{ "delete": { "_id": "<document-id-for-paper-001-vector-2>", "_index": "paper" } }
-{ "index": { "_index": "paper" } }
-{ "paper-id": "001", "content-vec": [10.2, 10.42, 9.5, 22.2, ...] }
-{ "index": { "_index": "paper" } }
-{ "paper-id": "001", "content-vec": [10.2, 10.43, 9.5, 22.2, ...] }
-```
+For chunked data, add a keyword business identifier such as `paper-id`. Multiple vector records can share it, but each retains its own document ID. Search the business identifier, enumerate the intended records within pagination limits, delete those IDs, and index new vectors. Bulk deletion/insertion is not transactional; verify completion before relying on the new dataset. Do not use Delete by query's counters as proof that all old chunks were removed.

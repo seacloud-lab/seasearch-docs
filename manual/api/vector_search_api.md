@@ -1,156 +1,90 @@
 # Vector search API
 
-SeaSearch supports vector search over embeddings generated from text, images, or other data. A vector search workflow has three steps:
-
-1. Create a mapping with a vector field.
-2. Index documents that contain vectors with the same dimension as the mapping.
-3. Search the vector field for the nearest vectors.
-
-For a complete workflow, see [Vector search example](vector_search_example.md).
+Search embeddings stored in a mapped vector field. Use document APIs to index vectors, then query the nearest records. See the [complete example](vector_search_example.md).
 
 ## Create a vector index
 
-Create a vector field with the mapping API. The `dims` value must match the length of every vector stored in the field and every query vector.
+<span id="mapping-request"></span>
 
-SeaSearch supports three vector index types:
+Configure a vector field at [index creation](index/create_index.md) or with [Update mapping](index/update_mapping.md):
 
-| Index type | Search speed | Memory usage | Indexing speed | Recommended use |
-| --- | --- | --- | --- | --- |
-| `flat` | Slow | 100% | — | Small datasets and exact search |
-| `ivf_pq` | Fast | 10% - 20% | Medium | Large datasets |
-| `hnsw` | Fastest | 25% | Slow | High-performance, high-accuracy search |
-
-- `flat` stores the input vectors directly and computes distances against all stored vectors. It is usually the best choice for small datasets.
-- `ivf_pq` uses an inverted file index and product quantization to reduce memory usage and search time. See the [IVF-PQ overview](https://towardsdatascience.com/similarity-search-with-ivfpq-9c6348fd4db3/) for background.
-- `hnsw` uses a hierarchical navigable small world graph. It provides high search performance and accuracy at the cost of additional memory.
-
-!!! note
-    SeaSearch 1.0.x supports `flat` and `ivf_pq`. Use `hnsw` only with SeaSearch 1.1.0 or later.
-
-### Choose an index type
-
-To choose the index type, you can consider the following factors:
-
-1. Although `flat` index provides exact search results, it is usually not necessary for most use cases. Both `hnsw` and `ivf_pq` indexes can automatically fall back to a exact search mode when the dataset is small. In default configuration, `hnsw` performs a exact search when the number of vectors is fewer than 10K, while `ivf_pq` performs a exact search when the number of vectors is fewer than 100K. This avoids the overhead of maintaining and searching complex index structures for small datasets.
-2. In most scenarios, you do not need to explicitly use the `flat` index. As a general guideline, use `hnsw` when the number of vectors is less than 10M because it provides high search performance and accuracy with reasonable memory usage. For larger datasets, `ivf_pq` is recommended because it significantly reduces memory consumption and provides efficient search performance at large scale.
-
-### Mapping request
-
-```http
-PUT /es/{index_name}/_mapping
-Content-Type: application/json
+```json title="Mapping · Four-dimensional flat vector field"
+{"mappings":{"properties":{
+  "vec":{"type":"vector","dims":4,"vec_index_type":"flat"},
+  "category":{"type":"keyword"}
+}}}
 ```
 
-```json
-{
-  "properties": {
-    "vec": {
-      "type": "vector",
-      "dims": 4,
-      "vec_index_type": "flat"
-    },
-    "category": {
-      "type": "keyword"
-    }
-  }
-}
-```
+<span id="mapping-parameters"></span>
 
-### Mapping parameters
+| Mapping option | Type | Description |
+| --- | --- | --- |
+| `type` | string | Required: `vector`. |
+| `dims` | integer | Required positive vector dimension. All indexed/query vectors must match it. |
+| `vec_index_type` | string | Required: `flat`, `ivf_pq`, or `hnsw` (supported since v1.1). |
+| `m` | integer | Required for `ivf_pq`: positive, and must divide `dims`. |
+| `nbits` | integer | Required positive PQ code width for `ivf_pq`; use a backend-supported width, commonly 4 or 8. |
+| `store_with_float16` | boolean | Optional, default false. Reduces precision of stored vectors on supported storage paths. |
 
-| Parameter | Description |
-| --- | --- |
-| `index_name` | The name of the index. It is specified in the `{index_name}` path parameter of the mapping request. |
-| `type` | Must be `vector`, indicating that the field stores vectors (embeddings) and can be searched with the vector search API. |
-| `dims` | The dimension of each vector. |
-| `vec_index_type` | The vector index type: `flat`, `ivf_pq`, or `hnsw` (SeaSearch 1.1.0 and later). |
-| `m` | Required for `ivf_pq`. It must be greater than 0 and divide `dims` evenly. |
-| `nbits` | Required for `ivf_pq`. It must be greater than 0; `4` or `8` are recommended. |
+<span id="choose-an-index-type"></span>
+
+`flat` uses exact distance comparison and is suitable for small datasets. `ivf_pq` reduces memory using approximate search over trained/sealed segments; growing segments are searched directly. `hnsw`, available since v1.1, uses a graph with background rebuilding. Choose an index type based on dataset size, memory usage, latency, and recall requirements.
+
+For IVF-PQ, eligible growing segments are sealed in the background after reaching `SS_VECTOR_IVFPQ_THRESHOLD` (default 100000). See [Seal vector index](seal_vector_index.md). HNSW rebuilding is automatic and does not use this seal endpoint.
 
 ## Index documents containing vectors
 
-Indexing a document with a vector uses the same document APIs as indexing a regular document. The following example uses the bulk API:
+Use [Index document](document/index_document.md), [Bulk](document/bulk.md), or other ingestion APIs with complete numeric arrays. Omit document IDs to generate valid vector IDs; supplied IDs must be canonical base62 strings.
 
-```http
-POST /es/_bulk
-Content-Type: application/x-ndjson
-```
-
-```json
-{ "index": { "_index": "index1" } }
-{ "name": "jack1", "category": "science", "vec": [10.2, 10.41, 9.5, 22.2] }
-{ "index": { "_index": "index1" } }
-{ "name": "jack2", "category": "technology", "vec": [10.2, 11.41, 9.5, 22.2] }
-```
+Vectors are stored separately and normally removed from `_source`; retaining an ordinary source field does not require `store: true`. Replacements must include the vector when it should remain part of the record.
 
 ## Search vectors
 
-You can search the index for the `k` most similar vectors to an input vector and return fields from the documents that contain those vectors:
-
 ```http
-POST /api/{index_name}/_search/vector
-Content-Type: application/json
+POST /api/{target}/_search/vector
 ```
 
-```json
-{
-  "query_field": "vec",
-  "k": 7,
-  "return_fields": ["name"],
-  "vector": [10.2, 10.40, 9.5, 22.2],
-  "filter_query": {
-    "term": {"category": "science"}
-  }
-}
+Use a concrete index name as `target`, or compatible indexes with the same vector field/dimension. No URL query parameters are consumed.
+
+<span id="search-parameters"></span>
+
+| Body parameter | Type | Default | Description |
+| --- | --- | --- | --- |
+| `query_field` | string | — | Required mapped vector field. |
+| `vector` | number array | — | Required query vector with exactly `dims` entries. |
+| `k` | integer | `10` | Positive maximum nearest results to select. |
+| `nprobe` | integer | `1` | Positive number of IVF clusters to probe; ignored by flat/HNSW search. |
+| `filter_query` | object | None | Inner Query DSL condition used to select candidate documents first. |
+| `return_fields` | array | None | Selected source fields returned under each hit's `fields`; same entries as Search `fields`. |
+| `_source` | boolean or string array | `true` | Ordinary source-field selection. |
+
+```sh title="Find nearest vectors within a category"
+curl -u "$SS_USER:$SS_PASSWORD" \
+  -X POST "$SS_URL/api/api_vectors/_search/vector" \
+  -H 'Content-Type: application/json' \
+  --data-binary '{"query_field":"vec","vector":[1,0,0,0],"k":5,"return_fields":["name"],"filter_query":{"term":{"category":"reference"}}}'
 ```
 
-The response uses the same format as full-text search. Results are sorted by vector distance, with the nearest vectors first.
+## Responses
 
-### Search parameters
+HTTP 200 uses the [Search response shape](search/search.md#responses). Hits are sorted by vector similarity; scores are calculated as `1 / (1 + distance)`. Search uses L2-based distance; cosine and dot-product modes are not configurable.
 
-| Parameter | Required | Description |
-| --- | --- | --- |
-| `query_field` | Yes | The mapped field to search. It must be a vector field. |
-| `k` | No | The number of nearest vectors to return. The default is `10`. |
-| `return_fields` | No | Fields to return in the `fields` section of each hit. |
-| `vector` | Yes | The query vector. Its length must equal the mapped `dims` value. |
-| `nprobe` | No | For `ivf_pq`, the number of clusters to search. A larger value generally improves recall and increases latency. The default is `1`. |
+Only documents retrieved from the ordinary document index can appear as hits. Vector selection can therefore return fewer than `k` records. Use globally distinct document IDs when querying multiple indexes to avoid ambiguous ID-based result association.
 
-### Filtering and source options
+## Filtering and source options
 
-| Parameter | Required | Description |
-| --- | --- | --- |
-| `filter_query` | No | A full-text query object used to filter candidate documents before vector search. |
-| `_source` | No | Controls which ordinary document source fields are returned in the `_source` section of each hit. |
+`filter_query` is a Query DSL object, for example `{"term":{"category":"reference"}}`, not a full Search body. On a single Server, candidates come from ordinary search, capped by `ZINC_MAX_RESULTS` (default 10000), sorted by ID before vector comparison. A broad filter can therefore exclude valid neighbors beyond that candidate window.
+
+`return_fields` and `_source` use [Search source/field selection](search/search.md#source-selection-and-returned-fields); they do not return the stored embedding itself. Cluster vector execution has separate limits; see [Cluster API usage](cluster.md).
+
+## Errors and limitations
+
+- Invalid JSON, a missing/non-vector field, or a dimension mismatch returns 400. No matching index returns 404. Execution/storage failures generally return 500.
+- `k` and `nprobe` must be positive integers.
+- Approximate search does not guarantee exact top-k ordering. Tune IVF `nprobe` and evaluate with [Recall](recall.md).
+- Recall and seal are IVF-PQ maintenance tools. For HNSW cluster search, see [Cluster API usage](cluster.md#vector-search).
+- Write acknowledgment and vector/full-text visibility can differ; verify both before a dependent workflow.
 
 ## Recall Query
 
-Use the recall API to evaluate an `ivf_pq` index and tune its parameters. The response contains a floating-point value between `0` and `1`; values closer to `1` indicate more accurate approximate search.
-
-```http
-POST /api/{index_name}/_recall
-Content-Type: application/json
-```
-
-```json
-{
-  "field": "vec",
-  "k": 10,
-  "nprobe": 5,
-  "query_count": 1000
-}
-```
-
-| Parameter | Description |
-| --- | --- |
-| `field` | The vector field to evaluate. |
-| `k` | The number of nearest vectors per query. The default is `10`. |
-| `nprobe` | The number of IVF clusters to probe. The default is `5`. |
-| `query_count` | The number of test queries. A larger value gives a more stable estimate. The default is `100`. |
-
-You can tune the following parameters to improve recall:
-
-- Increase `m` to improve accuracy, with additional computational and memory cost.
-- Increase `nbits` to represent the original vectors more accurately, with lower compression.
-- Increase `nprobe` to search more clusters, with additional query latency.
-- `k` represents the number of most similar vectors returned in each query. If `k` is too low, it may generate random errors, leading to an inaccurate evaluation of recall.
+The recall operation has moved to [Recall](recall.md), with supported index types, defaults, and example requests.

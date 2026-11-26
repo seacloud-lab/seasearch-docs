@@ -58,8 +58,10 @@ extra_css:
 markdown_extensions:
   - markdown.extensions.admonition
   - markdown.extensions.attr_list
-  - markdown.extensions.codehilite:
-      guess_lang: true
+  - markdown.extensions.md_in_html
+  - pymdownx.highlight:
+      guess_lang: false
+      pygments_lang_class: true
   - markdown.extensions.def_list
   - markdown.extensions.footnotes
   - markdown.extensions.meta
@@ -93,11 +95,96 @@ nav:
   - SeaSearch API:
     - Overview: api/overview.md
     - API Authentication: api/authentication.md
-    - Index management: api/index_management.md
-    - Document operations: api/document_operation.md
-    - Search document: api/search_document.md
+    - Cluster API usage: api/cluster.md
+    - Index:
+      - Overview: api/index/overview.md
+      - Create index: api/index/create_index.md
+      - Get index: api/index/get_index.md
+      - List indexes: api/index/list_indexes.md
+      - List index names: api/index/list_index_names.md
+      - Check exists: api/index/check_exists.md
+      - Delete index: api/index/delete_index.md
+      - Get mapping: api/index/get_mapping.md
+      - Update mapping: api/index/update_mapping.md
+      - Mapping and field types: api/index/mapping.md
+      - Get settings: api/index/get_settings.md
+      - Update settings: api/index/update_settings.md
+      - Text analysis: api/index/text_analysis.md
+      - Analysis components: api/index/analysis_components.md
+      - Chinese analyzer: api/index/chinese_analyzer.md
+      - Analyze: api/index/analyze.md
+      - Refresh: api/index/refresh.md
+      - Index templates:
+        - Create or update: api/index/create_template.md
+        - Get: api/index/get_template.md
+        - List: api/index/list_templates.md
+        - Delete: api/index/delete_template.md
+      - Index aliases:
+        - Update: api/index/update_aliases.md
+        - Get: api/index/get_aliases.md
+    - Document:
+      - Overview: api/document/overview.md
+      - Index document: api/document/index_document.md
+      - Update document: api/document/update_document.md
+      - Get document: api/document/get_document.md
+      - Delete document: api/document/delete_document.md
+      - Bulk: api/document/bulk.md
+      - Bulk V2: api/document/bulk_v2.md
+      - Multi: api/document/multi.md
+      - Delete by query: api/document/delete_by_query.md
+    - Search:
+      - Search API: api/search/search.md
+      - Native search: api/search/native_search.md
+      - Multi-search: api/search/multi_search.md
+      - Unified search: api/search/unified_search.md
+      - Aggregations:
+        - Overview: api/search/aggregations/overview.md
+        - Metrics: api/search/aggregations/metrics.md
+        - Terms: api/search/aggregations/terms.md
+        - Range and date range: api/search/aggregations/range.md
+        - Histogram: api/search/aggregations/histogram.md
+        - Date histogram: api/search/aggregations/date_histogram.md
+        - Auto date histogram: api/search/aggregations/auto_date_histogram.md
+    - Query DSL:
+      - Overview: api/query_dsl/overview.md
+      - Full-text search and filters: api/query_dsl/getting_started.md
+      - Match: api/query_dsl/match.md
+      - Match all / Match none: api/query_dsl/match_all.md
+      - Match phrase: api/query_dsl/match_phrase.md
+      - Match bool prefix: api/query_dsl/match_bool_prefix.md
+      - Match phrase prefix: api/query_dsl/match_phrase_prefix.md
+      - Multi-match: api/query_dsl/multi_match.md
+      - Term: api/query_dsl/term.md
+      - Terms: api/query_dsl/terms.md
+      - Range: api/query_dsl/range.md
+      - IDs: api/query_dsl/ids.md
+      - Prefix: api/query_dsl/prefix.md
+      - Wildcard: api/query_dsl/wildcard.md
+      - Regexp: api/query_dsl/regexp.md
+      - Fuzzy: api/query_dsl/fuzzy.md
+      - Bool: api/query_dsl/bool.md
+      - Query string: api/query_dsl/query_string.md
+      - Simple query string: api/query_dsl/simple_query_string.md
     - Vector search:
       - Vector search API: api/vector_search_api.md
+      - Seal vector index: api/seal_vector_index.md
+      - Recall: api/recall.md
       - Vector search example: api/vector_search_example.md
+    - User and access management:
+      - Login: api/access/login.md
+      - Users: api/access/users.md
+      - Roles: api/access/roles.md
+      - Permissions: api/access/permissions.md
+    - System:
+      - Version: api/system/version.md
+      - Health check: api/system/health_check.md
+      - Cluster nodes: api/system/cluster_nodes.md
+      - Cluster cleanup: api/system/cluster_cleanup.md
+      - Operations appendix: api/system/operations.md
+    - Client compatibility: api/compatibility.md
+    - Previous page locations:
+      - Index management: api/index_management.md
+      - Document operations: api/document_operation.md
+      - Search document: api/search_document.md
   - ChangeLog:
     - SeaSearch server: changelog/seasearch_server.md
